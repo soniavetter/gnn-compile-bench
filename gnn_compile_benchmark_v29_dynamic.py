@@ -6,56 +6,24 @@ Benchmark script for:
     Author: Sonia Vetter, March 2026
     Version: v29  (with self-loop and GCN-normalisation workaround, parametric dynamic shapes)
 
-Overview
---------
-Measures the effect of torch.compile() on GNN inference latency, training
-throughput, GPU memory, and model accuracy across five compile modes:
-    eager                      -- plain PyTorch, no compilation
-    default                    -- balanced fusion, fast compile time
-    reduce-overhead            -- minimises kernel-launch overhead via CUDA Graphs
-    max-autotune               -- exhaustive kernel search; slowest to compile
-    max-autotune-no-cudagraphs -- max-autotune without CUDA Graph capture
-
-Each compile mode runs in an isolated subprocess to prevent CUDA state or
-compiled-kernel-cache leakage between modes.
-
-Supported frameworks : PyG, DGL
-Supported models     : GCN, GraphSAGE, GAT, GIN (all with dropout + BatchNorm)
-                       R-GCN (heterogeneous, ogbn-mag only, PyG)
-                       DistMult (KG completion, ogbl-biokg only, PyG)
-Node classification  : Cora, CiteSeer, PubMed, ogbn-arxiv, ogbn-products,
-                       ogbn-mag (heterogeneous, R-GCN only)
-Link prediction      : ogbl-collab (Hits@50), ogbl-citation2 (MRR)
-KG completion        : ogbl-biokg (MRR, DistMult)
-
-Dataset tier structure:
-    Tier 1 (small,  fast dev): Cora, CiteSeer, PubMed
-    Tier 2 (medium, primary) : ogbn-arxiv, ogbl-collab, ogbn-mag, ogbl-biokg
-    Tier 3 (large,  stress)  : ogbn-products (*), ogbl-citation2 (*)
-    (*) ogbn-products and ogbl-citation2 require --use-sampling to avoid OOM.
-
 Usage
 -----
-Node classification (homogeneous):
-    python gnn_compile_benchmark_v29.py --framework pyg --model-name gcn --dataset ogbn-arxiv --hidden 256 --num-layers 3 --dropout 0.5 --repeats 30 --warmup 5 --train-epochs 20 --train-warmup 5 --modes eager default reduce-overhead max-autotune --out-dir ./results
+with run_experiments.sh / run_products.sh /run_gin_accuracy.sh
 
-Link prediction (homogeneous):
-    python gnn_compile_benchmark_v29.py --framework pyg --model-name graphsage --dataset ogbl-collab --hidden 256 --modes eager default --out-dir ./results
-
-Heterogeneous node classification (R-GCN, ogbn-mag):
-    python gnn_compile_benchmark_v29.py --framework pyg --model-name rgcn --dataset ogbn-mag --hidden 64 --num-layers 2 --dropout 0.5 --modes eager default reduce-overhead --out-dir ./results
-
-KG completion (DistMult, ogbl-biokg):
-    python gnn_compile_benchmark_v29.py --framework pyg --model-name distmult --dataset ogbl-biokg --emb-dim 128 --batch-size 8192 --modes eager default --out-dir ./results
-
-Output
-------
-Each run writes to <out-dir>/<framework>_<model>_<dataset>_<timestamp>/:
-    config.json                -- run configuration and system information
-    results.json               -- per-mode result dicts
-    tables.tex                 -- publication-ready LaTeX tables
-    run.log                    -- timestamped execution log
-"""
+or single run:
+python gnn_compile_benchmark_v29_dynamic.py \
+    --framework pyg \
+    --model-name gcn \
+    --dataset ogbn-arxiv \
+    --hidden 256 \
+    --num-layers 3 \
+    --dropout 0.5 \
+    --modes eager default reduce-overhead max-autotune max-autotune-no-cudagraphs \
+    --repeats 30 \
+    --warmup 5 \
+    --train-epochs 20 \
+    --train-warmup 5 \
+    --dynamic auto
 
 from __future__ import annotations
 
@@ -106,19 +74,15 @@ import torch.nn.functional as F
 import dgl
 # Kipf & Welling 2017 GCN layer
 # Paper  : https://arxiv.org/abs/1609.02907
-# DGL API: https://docs.dgl.ai/api/python/nn.pytorch.html#dgl.nn.pytorch.conv.GraphConv
 from dgl.nn import GraphConv
 # Hamilton et al. 2017 GraphSAGE layer (mean aggregation)
 # Paper  : https://arxiv.org/abs/1706.02216
-# DGL API: https://docs.dgl.ai/api/python/nn.pytorch.html#dgl.nn.pytorch.conv.SAGEConv
 from dgl.nn import SAGEConv as DGLSAGEConv
 # Velickovic et al. 2018 Graph Attention Network layer
 # Paper  : https://arxiv.org/abs/1710.10903
-# DGL API: https://docs.dgl.ai/api/python/nn.pytorch.html#dgl.nn.pytorch.conv.GATConv
 from dgl.nn import GATConv as DGLGATConv
 # Xu et al. 2019 Graph Isomorphism Network layer
 # Paper  : https://arxiv.org/abs/1810.00826
-# DGL API: https://docs.dgl.ai/api/python/nn.pytorch.html#dgl.nn.pytorch.conv.GINConv
 from dgl.nn import GINConv as DGLGINConv
 
 # ---------------------------------------------------------------------------
