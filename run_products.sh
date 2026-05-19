@@ -2,11 +2,8 @@
 # =============================================================================
 # run_products.sh
 #
-# Benchmarks gcn/gat x both frameworks on ogbn-products (Tier 3).
 # Identical structure and parameters to run_experiments.sh.
-#
-# ogbn-products: ~2.4M nodes, 61M edges, 47 classes, requires --use-sampling.
-# GAT auto-enables --use-sampling internally; all others need it explicitly.
+# ogbn-products: ~2.4M nodes, 61.9M edges, 47 classes, requires --use-sampling.
 #
 # Models  : gcn, gat  x  pyg, dgl  =  4 runs
 # Modes   : eager, default, reduce-overhead, max-autotune, max-autotune-no-cudagraphs
@@ -15,11 +12,11 @@
 # Usage:
 #   bash run_products.sh
 #   bash run_products.sh --dry-run
-#   bash run_products.sh --dynamic=true                        # dynamic=True  (always symbolic)
-#   bash run_products.sh --dynamic=false                       # dynamic=False (always static)
-#   bash run_products.sh --dynamic=auto                        # dynamic=None  (automatic, default)
+#   bash run_products.sh --dynamic=true                        # dynamic=True 
+#   bash run_products.sh --dynamic=false                       # dynamic=False 
+#   bash run_products.sh --dynamic=auto                        # dynamic=None  
 #   bash run_products.sh --resume=5:dgl:gcn:ogbn-products
-#   bash run_products.sh --script=gnn_compile_benchmark_v29_parametric.py
+#   bash run_products.sh --script=gnn_compile_benchmark_v29_dynamic.py
 # =============================================================================
 
 set -euo pipefail
