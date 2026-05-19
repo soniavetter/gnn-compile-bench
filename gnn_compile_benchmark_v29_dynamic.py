@@ -24,7 +24,7 @@ python gnn_compile_benchmark_v29_dynamic.py \
     --train-epochs 20 \
     --train-warmup 5 \
     --dynamic auto
-
+"""
 from __future__ import annotations
 
 # ---------------------------------------------------------------------------
