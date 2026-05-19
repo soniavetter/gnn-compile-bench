@@ -25,7 +25,6 @@ python gnn_compile_benchmark_v29_no_fixes.py \
     --train-warmup 5 \
     --dynamic auto
 """
-
 from __future__ import annotations
 
 # ---------------------------------------------------------------------------
