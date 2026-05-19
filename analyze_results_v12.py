@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-GNN Benchmark Results Analyzer
-Compares results_false vs results_true vs results_auto, DGL vs PyG per mode,
-and DGL eager vs PyG compiled modes (since DGL compile is always slower than PyG).
-Outputs a multi-sheet XLSX with color-coded comparisons and median summaries.
+Post-processing script that reads all result folders into the multi-sheet XLSX workbook.
 
 Usage:
-    python analyze_results6.py -f results_false -t results_true -a results_auto
+   python analyze_results_v12.py \
+    -a results_auto \
+    -t results_true \
+    -f results_false \
+    -n results_no_fixes \
+    -g results_gin_300epochs \
+    -o gnn_benchmark_results.xlsx
 """
 
 import json
