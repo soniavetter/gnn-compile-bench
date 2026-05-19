@@ -2,20 +2,18 @@
 # =============================================================================
 # run_gin_accuracy.sh
 #
-# Identisch mit run_experiments.sh, aber:
-#   - Nur GIN (Phase 3 + Phase 4)
-#   - 300 train-epochs statt 20
-#   - Alle 5 compile modes unverÃ¤ndert
-#   - Alle anderen Parameter identisch zur originalen run_experiments.sh
+# Identical structure and parameters to run_experiments.sh
+# GIN only 
+# 300 training epochs instead of 20
 #
 # Usage:
 #   bash run_gin_accuracy.sh
 #   bash run_gin_accuracy.sh --dry-run
-#   bash run_gin_accuracy.sh --dynamic=true                        # dynamic=True  (always symbolic)
-#   bash run_gin_accuracy.sh --dynamic=false                       # dynamic=False (always static)
-#   bash run_gin_accuracy.sh --dynamic=auto                        # dynamic=None  (automatic, default)
+#   bash run_gin_accuracy.sh --dynamic=true
+#   bash run_gin_accuracy.sh --dynamic=false
+#   bash run_gin_accuracy.sh --dynamic=auto
 #   bash run_gin_accuracy.sh --resume=3:pyg:gin:ogbn-arxiv
-#   bash run_gin_accuracy.sh --script=gnn_compile_benchmark_v29_workaround.py
+#   bash run_gin_accuracy.sh --script=gnn_compile_benchmark_v29_dynamic.py
 # =============================================================================
 
 set -euo pipefail
@@ -40,7 +38,7 @@ BASE_ARGS=(
 DRY_RUN=0
 RESUME_FROM=""
 SCRIPT_NAME="gnn_compile_benchmark_v29_workaround.py"
-DYNAMIC="auto"   # default: dynamic=None (automatic dynamic shapes)
+DYNAMIC="auto"
 
 for arg in "$@"; do
   case $arg in
@@ -52,13 +50,11 @@ for arg in "$@"; do
   esac
 done
 
-# Validate --dynamic value.
 case "$DYNAMIC" in
   auto|true|false) ;;
   *) echo "X --dynamic must be 'auto', 'true', or 'false' (got: '$DYNAMIC')"; exit 1 ;;
 esac
 
-# Build the --dynamic flag to forward to the Python script.
 DYNAMIC_ARG=(--dynamic "$DYNAMIC")
 
 if [[ "$SCRIPT_NAME" = /* ]]; then
@@ -125,7 +121,7 @@ run() {
 }
 
 # ---------------------------------------------------------------------------
-# Phase 3 - GIN auf ogbn-arxiv (node classification)
+# Phase 3 - GIN ogbn-arxiv
 # ---------------------------------------------------------------------------
 echo ""
 echo "################################################################"
@@ -142,23 +138,6 @@ for FRAMEWORK in pyg dgl; do
 done
 
 # ---------------------------------------------------------------------------
-# Phase 4 - GIN auf ogbl-collab (link prediction)
-# ---------------------------------------------------------------------------
-echo ""
-echo "################################################################"
-echo "#  PHASE 4 - GIN / ogbl-collab"
-echo "################################################################"
-
-for FRAMEWORK in pyg dgl; do
-    run "4:$FRAMEWORK:gin:ogbl-collab" "$FRAMEWORK GIN / ogbl-collab / all modes" \
-        --framework "$FRAMEWORK" --model-name gin --dataset ogbl-collab \
-        --hidden 256 --num-layers 3 --dropout 0.5 \
-        --modes "${MODES[@]}" \
-        --data-root "$DATA" --out-dir "$OUT" \
-        "${BASE_ARGS[@]}"
-done
-
-# ---------------------------------------------------------------------------
 # Warn if resume key was never matched
 # ---------------------------------------------------------------------------
 if [[ -n "$RESUME_FROM" && $_RESUME_FOUND -eq 0 ]]; then
@@ -167,8 +146,6 @@ if [[ -n "$RESUME_FROM" && $_RESUME_FOUND -eq 0 ]]; then
     echo "  Valid keys:"
     echo "    3:pyg:gin:ogbn-arxiv"
     echo "    3:dgl:gin:ogbn-arxiv"
-    echo "    4:pyg:gin:ogbl-collab"
-    echo "    4:dgl:gin:ogbl-collab"
     exit 1
 fi
 
@@ -181,7 +158,6 @@ echo "#  All experiments complete.  Results -> $OUT"
 echo "################################################################"
 echo ""
 echo "Runs completed:"
-echo "  Phase 3 - 2 runs  (PyG+DGL GIN x ogbn-arxiv,  all modes, 300 epochs)"
-echo "  Phase 4 - 2 runs  (PyG+DGL GIN x ogbl-collab, all modes, 300 epochs)"
-echo "  Total   - 4 runs"
+echo "  Phase 3 - 2 runs  (PyG+DGL GIN x ogbn-arxiv, all modes, 300 epochs)"
+echo "  Total   - 2 runs"
 echo "  Dynamic : $DYNAMIC  (torch.compile dynamic= used for all runs)"
