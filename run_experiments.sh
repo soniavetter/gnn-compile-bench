@@ -1,36 +1,23 @@
 # =============================================================================
 # run_experiments.sh
-# Focused experiment runner for the GNN torch.compile benchmark thesis.
+# Main experiment run script
 #
-# RQ coverage:
-#   RQ1 â€” Inference latency on ogbn-arxiv          â†’ Phase 3
-#   RQ2 â€” Framework Ã— architecture effect          â†’ Phase 3
-#   RQ3 â€” Latencyâ€“cost trade-off across modes      â†’ Phase 3 (compile_time_s + speedup)
-#   RQ4 â€” Scaling effects on speedup               â†’ Phase 2 (PyG + DGL GCN on Cora/PubMed)
-#                                                     + Phase 3 (arxiv)
-#          Note: training throughput scaling uses Coraâ†’PubMedâ†’arxiv (all full-batch).
-#          Inference speedup IS comparable across all three scales.
-#   RQ5 â€” Generalisation to link prediction        â†’ Phase 4 (GCN + GAT only;
-#          GraphSAGE/GIN omitted as they behave similarly to GCN for this comparison)
-#   RQ6 â€” GPU memory overhead                      â†’ Phase 3
-#   RQ7 â€” Training throughput under compilation    â†’ Phase 3
-#
-# Experiment counts:
-#   Phase 1  â€” 4 runs  (smoke test: PyG+DGL GCN+GAT on Cora, all modes)
-#   Phase 2  â€” 4 runs  (scale: PyG+DGL GCN+GAT on PubMed)
-#   Phase 3  â€” 8 runs  (arxiv: GCN/SAGE/GAT/GIN Ã— PyG/DGL)
-#   Phase 4  â€” 8 runs  (collab: GCN/SAGE/GAT/GIN Ã— PyG/DGL)
-#   Phase 5  â€” 4 runs  (GCN/ogbn-mag, GCN/ogbl-biokg, R-GCN/ogbn-mag, DistMult/ogbl-biokg)
-#   Total    â€” 28 runs
+# Experiments:
+#   Phase 1  4 runs  (smoke test: PyG+DGL GCN+GAT on Cora, all modes)
+#   Phase 2  4 runs  (scale: PyG+DGL GCN+GAT on PubMed)
+#   Phase 3  8 runs  (arxiv: GCN/SAGE/GAT/GIN PyG/DGL)
+#   Phase 4  8 runs  (collab: GCN/SAGE/GAT/GIN PyG/DGL)
+#   Phase 5  4 runs  (GCN/ogbn-mag, GCN/ogbl-biokg, R-GCN/ogbn-mag, DistMult/ogbl-biokg)
+#   Total   28 runs
 #
 # Usage:
-#   bash run_experiments.sh                                  # run everything (dynamic=auto)
+#   bash run_experiments.sh                                  # run everything 
 #   bash run_experiments.sh --dry-run                        # print commands only
-#   bash run_experiments.sh --dynamic=true                   # dynamic=True  (always symbolic)
-#   bash run_experiments.sh --dynamic=false                  # dynamic=False (always static)
-#   bash run_experiments.sh --dynamic=auto                   # dynamic=None  (automatic, default)
-#   bash run_experiments.sh --resume=3:dgl:gcn:ogbn-arxiv   # resume from key
-#   bash run_experiments.sh --script=gnn_compile_benchmark_v29_parametric.py
+#   bash run_experiments.sh --dynamic=true                   # dynamic=True 
+#   bash run_experiments.sh --dynamic=false                  # dynamic=False 
+#   bash run_experiments.sh --dynamic=auto                   # dynamic=None 
+#   bash run_experiments.sh --resume=3:dgl:gcn:ogbn-arxiv    # resume from key
+#   bash run_experiments.sh --script=gnn_compile_benchmark_v29_dynamic.py
 # =============================================================================
 
 set -euo pipefail
@@ -156,11 +143,10 @@ run() {
 }
 
 # ---------------------------------------------------------------------------
-# Phase 1 â€” Validation (smoke test)
+# Phase 1 Validation (smoke test)
 # Both frameworks, both models (GCN + GAT), all modes, smallest dataset (Cora).
 # Verifies loading, subprocess isolation, and JSON output across the full mode
 # matrix for both architectures.
-# Produces its own result dir â€” not used for RQ analysis.
 # ---------------------------------------------------------------------------
 echo ""
 echo "################################################################"
@@ -179,11 +165,8 @@ for FRAMEWORK in pyg dgl; do
 done
 
 # ---------------------------------------------------------------------------
-# Phase 2 â€” Scale data points (RQ4)
+# Phase 2 Scale data points (RQ4)
 # PyG AND DGL GCN+GAT on PubMed with all modes.
-# Cora is already covered by Phase 1; this adds the next scale point.
-# Both frameworks and both models are needed so the scale trend can be
-# plotted consistently across Coraâ†’PubMedâ†’arxiv for both GCN and GAT.
 # ---------------------------------------------------------------------------
 echo ""
 echo "################################################################"
@@ -202,13 +185,8 @@ for FRAMEWORK in pyg dgl; do
 done
 
 # ---------------------------------------------------------------------------
-# Phase 3 â€” Primary benchmark on ogbn-arxiv (RQ1, RQ2, RQ3, RQ6, RQ7)
-# All 4 models Ã— 2 frameworks, all 5 modes.
-# This is the third (and primary) scale point for RQ4.
-#
-# Note on GAT: the Python script auto-enables --use-sampling for GAT on
-# ogbn-arxiv (and ogbl-collab) to prevent OOM during full-graph attention
-# computation. No --use-sampling flag needed here.
+# Phase 3 Primary benchmark on ogbn-arxiv
+# All 4 models 2 frameworks, all 5 modes.
 # ---------------------------------------------------------------------------
 echo ""
 echo "################################################################"
@@ -227,17 +205,8 @@ for FRAMEWORK in pyg dgl; do
 done
 
 # ---------------------------------------------------------------------------
-# Phase 4 â€” Link prediction on ogbl-collab (RQ5)
-# All 4 models Ã— both frameworks.
-# GCN = clean-compile baseline. GAT = graph-break risk case.
-# GraphSAGE and GIN included for complete coverage.
-#
-# --collab-lr (0.001) and --collab-dropout (0.0) are applied automatically
-# by the Python script when dataset=ogbl-collab; no extra flags needed.
-#
-# val/test evaluation uses the official OGB fixed negatives
-# (split_edge["valid/test"]["edge_neg"], 100K per split) instead of randomly
-# sampled negatives.
+# Phase 4 Link prediction on ogbl-collab
+# All 4 models both frameworks.
 # ---------------------------------------------------------------------------
 echo ""
 echo "################################################################"
@@ -256,28 +225,7 @@ for FRAMEWORK in pyg dgl; do
 done
 
 # ---------------------------------------------------------------------------
-# Phase 5 â€” Heterogeneous graphs (breadth demonstration)
-#
-# GCN and GAT on ogbn-mag / ogbl-biokg (homogeneous baseline, PyG-only):
-#   GCN only â€” homogeneous baseline for comparison against R-GCN / DistMult.
-#
-# R-GCN on ogbn-mag:
-#   --hidden 64  --num-layers 2  per the OGB R-GCN baseline.
-#   Larger hidden OOMs due to four separate embedding tables (paper, author,
-#   institution, field_of_study).
-#   PyG-only pipeline (no DGL path implemented for R-GCN).
-#   Source: https://github.com/snap-stanford/ogb/tree/master/examples/nodeproppred/mag
-#
-# DistMult on ogbl-biokg:
-#   --hidden and --num-layers are ignored by the DistMult pipeline; the model
-#   uses --emb-dim for embedding size and --batch-size / --train-batch-size for
-#   the inference and training batch sizes.
-#   PyG-only pipeline (no DGL path implemented for DistMult).
-#   Source: https://ogb.stanford.edu/docs/linkprop/#ogbl-biokg
-#
-# The Python script silently downgrades reduce-overhead â†’ default and
-# max-autotune â†’ max-autotune-no-cudagraphs for sparse operators (RGCNConv)
-# that are incompatible with CUDA Graph capture. No extra flags needed here.
+# Phase 5 Heterogeneous graphs
 # ---------------------------------------------------------------------------
 echo ""
 echo "################################################################"
