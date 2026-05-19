@@ -20,7 +20,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
-# â”€â”€â”€ Color palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Color palette
 GREEN_FILL   = PatternFill("solid", start_color="C6EFCE")
 RED_FILL     = PatternFill("solid", start_color="FFC7CE")
 ORANGE_FILL  = PatternFill("solid", start_color="FFEB9C")
@@ -47,7 +47,7 @@ CENTER = Alignment(horizontal="center", vertical="center", wrap_text=True)
 LEFT   = Alignment(horizontal="left",   vertical="center", wrap_text=True)
 RIGHT  = Alignment(horizontal="right",  vertical="center")
 
-# â”€â”€â”€ Compile modes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Compile modes
 COMPILE_MODES = ["eager", "default", "reduce-overhead", "max-autotune", "max-autotune-no-cudagraphs"]
 MODE_SHORT = {
     "eager":                      "eager",
@@ -57,7 +57,7 @@ MODE_SHORT = {
     "max-autotune-no-cudagraphs": "max-AT-noCG",
 }
 
-# â”€â”€â”€ Canonical experiment ordering (matches paper table) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Canonical experiment ordering (matches paper table)
 FW_ORDER    = ["pyg", "dgl"]
 MODEL_ORDER = ["gcn", "graphsage", "gat", "gin", "rgcn", "distmult"]
 
@@ -66,7 +66,7 @@ def _model_rank(m): return MODEL_ORDER.index(m)    if m     in MODEL_ORDER  else
 def exp_sort_key(k):  return (_fw_rank(k[0]), _model_rank(k[1]), k[2])
 def pair_sort_key(p): return (_model_rank(p[0]), p[1])
 
-# â”€â”€â”€ Metrics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Metrics 
 # (display_name, json_key, unit, lower_is_better)   lower_is_better=None -> neutral
 METRICS = [
     ("Infer Latency Median (ms)",      "inference_latency_median_ms",           "ms",  True),
@@ -118,7 +118,7 @@ SUMMARY_METRICS = [
 ]
 
 
-# â”€â”€â”€ Error classification â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Error classification 
 def classify_error(err, train_err):
     combined = (err or "") + (train_err or "")
     if not combined.strip():
@@ -134,7 +134,7 @@ def classify_error(err, train_err):
     return "Error", "other"
 
 
-# â”€â”€â”€ Data loading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Data loading 
 def load_experiments(root_dir):
     """
     Returns dict: (framework, model, dataset) ->
@@ -242,7 +242,7 @@ def safe_merge_exps(exp_dicts):
     return merged
 
 
-# â”€â”€â”€ Cell helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Cell helpers 
 def sc(cell, value="", font=None, fill=None, alignment=None):
     cell.value     = value
     cell.font      = font or BODY_FONT
@@ -345,9 +345,9 @@ def freeze_rows(ws, cell, h1=40, h2=28):
         ws.row_dimensions[2].height = h2
 
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# SHEET 0 â€“ Research Questions overview
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+# SHEET 0: Research Questions overview
+
 def build_rq_overview_sheet(wb, false_exps, true_exps, auto_exps, nofixes_exps=None):
     ws = wb.create_sheet("Research Questions", 0)
 
@@ -478,9 +478,9 @@ def build_rq_overview_sheet(wb, false_exps, true_exps, auto_exps, nofixes_exps=N
         ws.column_dimensions[col].width = 8
 
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 # SHEET: Per-mode comparison (No WA baseline vs WA vs No-Dyn) + median rows
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 def build_comparison_sheet(wb, sheet_name, false_exps, true_exps, auto_exps, nofixes_exps, mode):
     ws = wb.create_sheet(sheet_name)
     freeze_rows(ws, "D3")
@@ -572,9 +572,9 @@ def build_comparison_sheet(wb, sheet_name, false_exps, true_exps, auto_exps, nof
         cw(ws, {col: 13, col+1: 13, col+2: 13, col+3: 13, col+4: 12, col+5: 12, col+6: 12}); col += 7
 
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 # SHEET: Mode Summary (Median pivot)
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 def build_mode_summary_sheet(wb, exps, sheet_name):
     ws = wb.create_sheet(sheet_name)
     freeze_rows(ws, "C3")
@@ -639,9 +639,9 @@ def build_mode_summary_sheet(wb, exps, sheet_name):
             col += 1
 
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# SHEET: Per-framework deep dive (No WA | WA | No-Dyn | WA Auto | Î”1 | Î”2 | Î”3)
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+# SHEET: Per-framework deep dive 
+
 def build_per_framework_summary(wb, false_exps, true_exps, auto_exps, framework, sheet_name, nofixes_exps=None):
     ws = wb.create_sheet(sheet_name)
     ws.freeze_panes = "C4"
@@ -747,9 +747,9 @@ def build_per_framework_summary(wb, false_exps, true_exps, auto_exps, framework,
             col += _N_PER_METRIC
 
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 # SHEET: DGL vs PyG (Eager) 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 def build_fw_eager_sheet(wb, merged_exps):
     ws = wb.create_sheet("DGL vs PyG (Eager)")
     freeze_rows(ws, "C3")
@@ -814,9 +814,9 @@ def build_fw_eager_sheet(wb, merged_exps):
         cw(ws, {col: 13, col+1: 13, col+2: 9}); col += 3
 
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 # SHEET: DGL vs PyG (All Modes)
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 def build_fw_all_modes_sheet(wb, merged_exps):
     ws = wb.create_sheet("DGL vs PyG (All Modes)")
     freeze_rows(ws, "D3")
@@ -884,9 +884,9 @@ def build_fw_all_modes_sheet(wb, merged_exps):
         cw(ws, {col: 13, col+1: 13, col+2: 9}); col += 3
 
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 # SHEET: DGL Eager vs PyG (Each Mode)
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 def build_dgl_eager_vs_pyg_compiled_sheet(wb, merged_exps):
     ws = wb.create_sheet("DGL Eager vs PyG Compiled")
 
@@ -1059,9 +1059,9 @@ def build_dgl_eager_vs_pyg_compiled_sheet(wb, merged_exps):
         col += n_pyg_cols
 
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 # SHEET: Compile Modes vs Eager (within each framework)
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 def build_compile_vs_eager_sheet(wb, merged_exps):
     ws = wb.create_sheet("Compile Modes vs Eager")
     all_keys = sorted(merged_exps.keys(), key=exp_sort_key)
@@ -1235,9 +1235,9 @@ def build_compile_vs_eager_sheet(wb, merged_exps):
         col += n_mode_cols
 
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 # SHEET: Error Summary  (side-by-side: Auto | True | False per experiment+mode)
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 def build_error_summary_sheet(wb, false_exps, true_exps, auto_exps, nofixes_exps=None):
     ws = wb.create_sheet("Error Summary")
     ws.freeze_panes = "E3"
@@ -1335,9 +1335,9 @@ def build_error_summary_sheet(wb, false_exps, true_exps, auto_exps, nofixes_exps
         col += N_COND_COLS
 
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 # SHEET: Auto vs No-Fixes  (dynamic=auto as baseline vs no code workarounds)
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 def build_auto_vs_nofixes_sheet(wb, auto_exps, nofixes_exps):
     """Side-by-side comparison of dynamic=auto vs no-fixes across all modes."""
     ws = wb.create_sheet("Auto vs No-Fixes")
@@ -1431,9 +1431,8 @@ def build_auto_vs_nofixes_sheet(wb, auto_exps, nofixes_exps):
         cw(ws, {col: 13, col+1: 13, col+2: 11, col+3: 11}); col += 4
 
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 # MEMORY SHEETS  (5 separate sheets, one per section)
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 def _mem_pairs(merged_exps):
     pairs = {}
@@ -1694,12 +1693,10 @@ def build_memory_best_sheet(wb, merged_exps):
         cw(ws, {col:13, col+1:12, col+2:13, col+3:12, col+4:9}); col += 5
 
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 # SHEET: GIN 300 Epochs vs 20 Epochs
 # Compares results_gin_300epochs (accuracy run) against the 20-epoch auto
-# baseline for GIN experiments only.
-# Metrics focused on: accuracy, final loss, epoch time, throughput, speedup.
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 GIN_ACC_METRICS = [
     # (display, json_key, unit, lower_is_better)
     ("Test Accuracy (%)",          "test_accuracy_pct",                  "%",   False),
@@ -1739,7 +1736,7 @@ def build_gin_accuracy_sheet(wb, auto_exps, gin300_exps):
         ws.cell(1, 1, "No GIN experiments found in either dataset.").font = BODY_FONT
         return
 
-    # Fixed columns: FW | Model | Dataset
+    # columns: FW | Model | Dataset
     for ci, label in enumerate(["Framework", "Model", "Dataset"], 1):
         ws.merge_cells(f"{get_column_letter(ci)}1:{get_column_letter(ci)}2")
         hdr(ws, 1, ci, label)
@@ -1790,7 +1787,6 @@ def build_gin_accuracy_sheet(wb, auto_exps, gin300_exps):
                 data_cell(ws, row, col+1, g3_err or g3v, fill=fill, err=bool(g3_err), neutral=not g3e, is_link=il_g3)
                 delta_cell(ws, row, col+2, av, g3v, lib, row_fill=fill)   # Î” 300ep vs 20ep
 
-                # Ã— gain cell
                 gain_cell = ws.cell(row, col+3)
                 if isinstance(av,(int,float)) and isinstance(g3v,(int,float)) and av != 0 and g3v != 0 and lib is not None:
                     ratio = (av / g3v) if lib else (g3v / av)   # lower_is_better: 20ep/300ep; higher: 300ep/20ep
@@ -1839,9 +1835,8 @@ def build_gin_accuracy_sheet(wb, auto_exps, gin300_exps):
         cw(ws, {col:13, col+1:13, col+2:11, col+3:9}); col += 4
 
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 # MAIN
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 def main():
     parser = argparse.ArgumentParser(
         description="GNN Benchmark Results Analyzer",
