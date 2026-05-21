@@ -88,9 +88,8 @@ Each archive contains one subfolder per experiment run, with the five output fil
 
 
 ## Reproducing the experiments
-
 ### 1. Set up the environment
-
+Install [Miniconda](https://docs.anaconda.com/miniconda/install/), then:
 ```bash
 conda env create -f environment.yml
 conda activate gnn_bench
