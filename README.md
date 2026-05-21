@@ -102,11 +102,11 @@ conda activate gnn_bench
 bash run_experiments.sh
 mv results results_auto
 
-# dynamic=true
+# dynamic=True
 bash run_experiments.sh --dynamic=true
 mv results results_true
 
-# dynamic=false
+# dynamic=False
 bash run_experiments.sh --dynamic=false
 mv results results_false
 ```
