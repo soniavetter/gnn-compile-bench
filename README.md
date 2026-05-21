@@ -98,10 +98,18 @@ conda activate gnn_bench
 ### 2. Run the full benchmark suite
 
 ```bash
-bash run_experiments.sh --script=<filename>
-```
+# Auto (dynamic=None)
+bash run_experiments.sh
+mv results results_auto
 
-Results are written to `./results/`.
+# dynamic=true
+bash run_experiments.sh --dynamic=true
+mv results results_true
+
+# dynamic=false
+bash run_experiments.sh --dynamic=false
+mv results results_false
+```
 
 **Flags:**
 
