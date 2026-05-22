@@ -30,6 +30,7 @@ Each benchmark run writes five files into `<out-dir>/<framework>_<model>_<datase
 |------|-------------|
 | `run_experiments.sh` | Full experiment suite.|
 | `run_gin_accuracy.sh` | GIN-only re-run on ogbn-arxiv with 300 training epochs instead of 20, to obtain convergence-quality accuracy numbers for GIN. |
+| `run_no_fixes.sh` | GCN + GAT × PyG + DGL without the workaround to test the effect|
 | `run_products.sh` | GCN + GAT × PyG + DGL on ogbn-products. Requires mini-batch sampling; run separately due to long wall-time. |
 
 ### Results archives
@@ -98,15 +99,15 @@ conda activate gnn_bench
 ### 2. Run the full benchmark suite
 
 ```bash
-# Auto (dynamic=None)
+# results_auto (dynamic=None)
 bash run_experiments.sh
 mv results results_auto
 
-# dynamic=True
+# results_true (dynamic=True)
 bash run_experiments.sh --dynamic=true
 mv results results_true
 
-# dynamic=False
+# results_false (dynamic=False)
 bash run_experiments.sh --dynamic=false
 mv results results_false
 ```
@@ -123,20 +124,27 @@ mv results results_false
 ### 3. Run the GIN accuracy experiment (300 epochs)
 
 ```bash
-bash run_gin_accuracy.sh --script=<filename>
+bash run_gin_accuracy.sh 
 ```
-
 Accepts the same `--dry-run`, `--dynamic=`, `--resume=`, and `--script=` flags. Valid resume keys are `3:pyg:gin:ogbn-arxiv` and `3:dgl:gin:ogbn-arxiv`.
 
-### 4. Run the ogbn-products stress test
+
+### 4. Run the no-workaround test
 
 ```bash
-bash run_products.sh --script=<filename>
+bash run_no_fixes.sh
+```
+Accepts the same `--dry-run`, `--dynamic=`, `--resume=`, and `--script=` flags.
+
+### 5. Run the ogbn-products stress test
+
+```bash
+bash run_products.sh 
 ```
 
 Accepts the same optional flags. Valid resume keys follow `5:<framework>:<model>:ogbn-products` (models: `gcn`, `gat`; frameworks: `pyg`, `dgl`). Mini-batch sampling is enabled automatically via `--use-sampling`.
 
-### 5. Run a single experiment manually
+### 6. Run a single experiment manually
 
 ```bash
 python gnn_compile_benchmark_v29_dynamic.py \
@@ -184,7 +192,7 @@ python gnn_compile_benchmark_v29_dynamic.py \
 | `--modes` | all five | Space-separated list of compile modes to run. Defaults to all five: `eager default reduce-overhead max-autotune max-autotune-no-cudagraphs`. |
 | `--out-dir` | `experiments/` | Root directory for output. Each run creates a timestamped subdirectory inside. |
 
-### 6. Analyse results
+### 7. Analyse results
 
 Before running the analysis, copy the ogbn-products results (from `run_products.sh`) into the `results_auto` folder so they are picked up together with the main auto results:
 
