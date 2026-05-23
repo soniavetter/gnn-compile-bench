@@ -112,8 +112,8 @@ Each archive contains one subfolder per experiment run, with the five output fil
 | `environment.yml` | Curated install recipe with custom wheel URLs for PyTorch, PyG, DGL, and all dependencies. Custom wheel URLs and index URLs added manually. Versions not fully pinned for all packages. | adjusted manually |
 | `gnn_bench.yml` | Full conda environment snapshot without build hashes and without local `prefix` path. All versions exactly pinned. Custom wheel URLs missing — GPU builds of `torch`, `dgl`, and PyG extensions may fail to resolve without them. | `conda env export --no-builds \| grep -v "^prefix" > gnn_bench.yml` |
 | `pip_packages.txt` | All exact pip package versions. Requires Python 3.11 and the correct wheel URLs to resolve GPU builds. Custom wheel URLs missing — must be passed manually when installing. | `pip freeze > pip_packages.txt` |
-| `packages.txt` | **Reference only.** Full `conda list` output with all conda and pip packages including build hashes. Documents exact packages the experiments were run on. | `conda list > packages.txt` |
-| `system_info.txt` | **Reference only.** Hardware and software snapshot at experiment time (platform, Python, PyTorch, CUDA, cuDNN, PyG, DGL versions) followed by full `nvidia-smi` output. | `platform.platform()`, `platform.python_version()`, `torch.__version__`, `torch.version.cuda`, `torch.backends.cudnn.version()`, `torch_geometric.__version__`, `dgl.__version__`, `nvidia-smi` |
+| `packages.txt` | Full `conda list` output with all conda and pip packages including build hashes. Documents exact packages the experiments were run on. | `conda list > packages.txt` |
+| `system_info.txt` | Hardware and software snapshot at experiment time (platform, Python, PyTorch, CUDA, cuDNN, PyG, DGL versions) followed by full `nvidia-smi` output. | `platform.platform()`, `platform.python_version()`, `torch.__version__`, `torch.version.cuda`, `torch.backends.cudnn.version()`, `torch_geometric.__version__`, `dgl.__version__`, `nvidia-smi` |
 
 ---
 
@@ -282,7 +282,7 @@ cp -r results_products/* results_auto/
 Then run the analysis script:
 
 ```bash
-python analyze_results_v50.py
+python analyze_results_v15.py
 ```
 
 **Flags:**
