@@ -6,34 +6,57 @@ A benchmark suite that measures the effect of `torch.compile()` on Graph Neural 
 
 ---
 
+## Table of Contents
+
+1. [Contents](#contents)
+   - [Benchmark Scripts](#benchmark-scripts)
+   - [Experiment Run Scripts](#experiment-run-scripts)
+   - [Results Archives](#results-archives)
+   - [Results Workbook](#results-workbook)
+2. [Reproducing the Experiments](#reproducing-the-experiments)
+   - [Environment Files](#environment-files)
+   - [1. Set Up the Environment](#1-set-up-the-environment)
+   - [2. Run the Full Benchmark Suite](#2-run-the-full-benchmark-suite)
+   - [3. Run the GIN Accuracy Experiment (300 Epochs)](#3-run-the-gin-accuracy-experiment-300-epochs)
+   - [4. Run the No-Workaround Test](#4-run-the-no-workaround-test)
+   - [5. Run the ogbn-products Stress Test](#5-run-the-ogbn-products-stress-test)
+   - [6. Run a Single Experiment Manually](#6-run-a-single-experiment-manually)
+   - [7. Analyse Results](#7-analyse-results)
+
+---
+
 ## Contents
 
-### Benchmark scripts
+### Benchmark Scripts
 
 | File | Description |
 |------|-------------|
-| `gnn_compile_benchmark_v29_dynamic.py` | Main benchmark script. Supports parametric `dynamic=` shapes (`auto`/`True`/`False`). Use this for all standard runs. |
-| `gnn_compile_benchmark_v29_no_fixes.py` | Identical to the above but **without** the self-loop and GCN-normalisation workaround — used to isolate the effect of those code changes. |
-| `analyze_results_v12.py` | Post-processing script that reads all result folders into the multi-sheet XLSX workbook. |
+| `gnn_compile_benchmark_dynamic.py` | Main benchmark script. Supports parametric `dynamic=` shapes (`auto`/`True`/`False`). Use this for all standard runs. |
+| `gnn_compile_benchmark_no_fixes.py` | Identical to the above but **without** the self-loop and GCN-normalisation workaround — used to isolate the effect of those code changes. |
+| `analyze_results.py` | Post-processing script that reads all result folders into the multi-sheet XLSX workbook. |
 
 Each benchmark run writes five files into `<out-dir>/<framework>_<model>_<dataset>_<timestamp>/`:
 
 - `config.json` — full run configuration and system info
-- `results.json` — per-mode result dicts 
+- `results.json` — per-mode result dicts
 - `tables.tex` — LaTeX tables
 - `run.log` — execution log
 - `recommendations.txt` — plain-text practical recommendations synthesised from the per-mode results
 
-### Experiment run scripts
+---
+
+### Experiment Run Scripts
 
 | File | Description |
 |------|-------------|
-| `run_experiments.sh` | Full experiment suite.|
+| `run_experiments.sh` | Full experiment suite. |
 | `run_gin_accuracy.sh` | GIN-only re-run on ogbn-arxiv with 300 training epochs instead of 20, to obtain convergence-quality accuracy numbers for GIN. |
-| `run_no_fixes.sh` | GCN + GAT × PyG + DGL without the workaround to test the effect|
+| `run_no_fixes.sh` | GCN + GAT × PyG + DGL without the workaround to test the effect. |
 | `run_products.sh` | GCN + GAT × PyG + DGL on ogbn-products. Requires mini-batch sampling; run separately due to long wall-time. |
 
-### Results archives
+---
+
+### Results Archives
 
 Each archive contains one subfolder per experiment run, with the five output files listed above.
 
@@ -42,12 +65,14 @@ Each archive contains one subfolder per experiment run, with the five output fil
 | `results_auto.zip` | `auto` (default) | Primary results — `torch.compile` dynamic shapes set to `None` (PyTorch chooses automatically). Baseline for all comparisons. |
 | `results_true.zip` | `True` | Re-run with `dynamic=True` (always symbolic; compiled graph is always reused regardless of shape changes). |
 | `results_false.zip` | `False` | Re-run with `dynamic=False` (always static; re-specialises on every new shape). |
-| `results_no_fixes.zip` | `auto` | Re-run with `gnn_compile_benchmark_v29_no_fixes.py` — no self-loop / normalisation workarounds applied. Isolates the impact of those fixes. |
+| `results_no_fixes.zip` | `auto` | Re-run with `gnn_compile_benchmark_no_fixes.py` — no self-loop / normalisation workarounds applied. Isolates the impact of those fixes. |
 | `results_gin_300epochs.zip` | `auto` | GIN on ogbn-arxiv trained for 300 epochs (PyG GIN + DGL GIN). |
 
-### Results workbook
+---
 
-`gnn_benchmark_results.xlsx` — 508 successful runs out of 580 total (56 OOM, 16 other errors).
+### Results Workbook
+
+`gnn_benchmark_results.xlsx`
 
 | Sheet | Description |
 |-------|-------------|
@@ -76,27 +101,70 @@ Each archive contains one subfolder per experiment run, with the five output fil
 | GIN 300 vs 20 Epochs | Accuracy and throughput comparison for GIN trained for 300 vs 20 epochs. |
 | Error Summary | All OOM and error entries with framework, model, dataset, mode, and error type. |
 
-### Environment files
+---
 
-| File | Description |
-|------|-------------|
-| `environment.yml` | Conda environment export (`gnn_bench`). Reproducible install via `conda env create -f environment.yml`. |
-| `pip_packages.txt` | `pip freeze` output. Alternative install via `pip install -r pip_packages.txt` (requires Python 3.11 to be set up beforehand). |
-| `packages.txt` | Full `conda list` output including both conda and pip packages with build hashes. |
-| `system_info.txt` | Hardware and software snapshot at experiment time (GPU, driver, PyTorch, CUDA, cuDNN, PyG, DGL versions). |
+## Reproducing the Experiments
+
+### Environment Files
+
+| File | Description | Export Command |
+|------|-------------|----------------|
+| `environment.yml` | Curated install recipe with custom wheel URLs for PyTorch, PyG, DGL, and all dependencies. Custom wheel URLs and index URLs added manually. Versions not fully pinned for all packages. | adjusted manually |
+| `gnn_bench.yml` | Full conda environment snapshot without build hashes and without local `prefix` path. All versions exactly pinned. Custom wheel URLs missing — GPU builds of `torch`, `dgl`, and PyG extensions may fail to resolve without them. | `conda env export --no-builds \| grep -v "^prefix" > gnn_bench.yml` |
+| `pip_packages.txt` | All exact pip package versions. Requires Python 3.11 and the correct wheel URLs to resolve GPU builds. Custom wheel URLs missing — must be passed manually when installing. | `pip freeze > pip_packages.txt` |
+| `packages.txt` | **Reference only.** Full `conda list` output with all conda and pip packages including build hashes. Documents exact packages the experiments were run on. | `conda list > packages.txt` |
+| `system_info.txt` | **Reference only.** Hardware and software snapshot at experiment time (platform, Python, PyTorch, CUDA, cuDNN, PyG, DGL versions) followed by full `nvidia-smi` output. | `platform.platform()`, `platform.python_version()`, `torch.__version__`, `torch.version.cuda`, `torch.backends.cudnn.version()`, `torch_geometric.__version__`, `dgl.__version__`, `nvidia-smi` |
 
 ---
 
+### 1. Set Up the Environment
 
-## Reproducing the experiments
-### 1. Set up the environment
-Install [Miniconda](https://docs.anaconda.com/miniconda/install/), then:
+Install [Miniconda](https://docs.anaconda.com/miniconda/install/).
+
+---
+
+**Option 1 — `environment.yml`**
+
+Contains all packages with correct GPU wheel URLs for CUDA 12.4: PyTorch, PyG (`torch-geometric`, `torch-scatter`, `torch-sparse`, `torch-cluster`, `torch-spline-conv`, `pyg-lib`), DGL, OGB, and all other dependencies.
+
 ```bash
 conda env create -f environment.yml
 conda activate gnn_bench
 ```
 
-### 2. Run the full benchmark suite
+---
+
+**Option 2 — `gnn_bench.yml` (fallback if Option 1 fails)**
+
+Full conda snapshot with all exact pinned versions. Does not include custom wheel URLs, so GPU builds must be resolved manually after creating the environment.
+
+```bash
+conda env create -f gnn_bench.yml
+conda activate gnn_bench
+pip install torch --index-url https://download.pytorch.org/whl/cu124
+pip install torch-geometric torch-scatter torch-sparse torch-cluster torch-spline-conv pyg-lib --find-links https://data.pyg.org/whl/torch-2.6.0+cu124.html
+pip install dgl --find-links https://data.dgl.ai/wheels/torch-2.6/cu124/repo.html
+```
+
+---
+
+**Option 3 — `pip_packages.txt` (fallback if Option 2 fails)**
+
+Contains all exact pip versions. Requires Python 3.11 to be set up first via Miniconda, then install with the correct wheel URLs:
+
+```bash
+conda create -n gnn_bench python=3.11
+conda activate gnn_bench
+pip install -r pip_packages.txt \
+  --index-url https://download.pytorch.org/whl/cu124 \
+  --extra-index-url https://pypi.org/simple \
+  --find-links https://data.pyg.org/whl/torch-2.6.0+cu124.html \
+  --find-links https://data.dgl.ai/wheels/torch-2.6/cu124/repo.html
+```
+
+---
+
+### 2. Run the Full Benchmark Suite
 
 ```bash
 # results_auto (dynamic=None)
@@ -116,38 +184,47 @@ mv results results_false
 
 | Flag | Description |
 |------|-------------|
-| `--script=<filename>` | Benchmark script to use. Use `gnn_compile_benchmark_v29_dynamic.py` for standard results or `gnn_compile_benchmark_v29_no_fixes.py` to reproduce the no-fixes results. |
+| `--script=<filename>` | Benchmark script to use. Use `gnn_compile_benchmark_dynamic.py` for standard results or `gnn_compile_benchmark_no_fixes.py` to reproduce the no-fixes results. |
 | `--dry-run` | Print the commands that would be executed without running them. |
-| `--dynamic=auto\|true\|false` | Set the `dynamic=` argument passed to `torch.compile()` for every run. Default is `auto` (`None` is automatically). `true` forces always-symbolic compilation; `false` forces always-static specialisation. |
+| `--dynamic=auto\|true\|false` | Set the `dynamic=` argument passed to `torch.compile()` for every run. Default is `auto` (`None` is passed automatically). `true` forces always-symbolic compilation; `false` forces always-static specialisation. |
 | `--resume=<key>` | Skip all runs before the given key and start from it. Useful after an interruption. Keys follow the format `<phase>:<framework>:<model>:<dataset>`, e.g. `3:dgl:gcn:ogbn-arxiv`. |
 
-### 3. Run the GIN accuracy experiment (300 epochs)
+---
+
+### 3. Run the GIN Accuracy Experiment (300 Epochs)
 
 ```bash
-bash run_gin_accuracy.sh 
+bash run_gin_accuracy.sh
 ```
+
 Accepts the same `--dry-run`, `--dynamic=`, `--resume=`, and `--script=` flags. Valid resume keys are `3:pyg:gin:ogbn-arxiv` and `3:dgl:gin:ogbn-arxiv`.
 
+---
 
-### 4. Run the no-workaround test
+### 4. Run the No-Workaround Test
 
 ```bash
 bash run_no_fixes.sh
 ```
+
 Accepts the same `--dry-run`, `--dynamic=`, `--resume=`, and `--script=` flags.
 
-### 5. Run the ogbn-products stress test
+---
+
+### 5. Run the ogbn-products Stress Test
 
 ```bash
-bash run_products.sh 
+bash run_products.sh
 ```
 
 Accepts the same optional flags. Valid resume keys follow `5:<framework>:<model>:ogbn-products` (models: `gcn`, `gat`; frameworks: `pyg`, `dgl`). Mini-batch sampling is enabled automatically via `--use-sampling`.
 
-### 6. Run a single experiment manually
+---
+
+### 6. Run a Single Experiment Manually
 
 ```bash
-python gnn_compile_benchmark_v29_dynamic.py \
+python gnn_compile_benchmark_dynamic.py \
     --framework pyg \
     --model-name gcn \
     --dataset ogbn-arxiv \
@@ -192,7 +269,9 @@ python gnn_compile_benchmark_v29_dynamic.py \
 | `--modes` | all five | Space-separated list of compile modes to run. Defaults to all five: `eager default reduce-overhead max-autotune max-autotune-no-cudagraphs`. |
 | `--out-dir` | `experiments/` | Root directory for output. Each run creates a timestamped subdirectory inside. |
 
-### 7. Analyse results
+---
+
+### 7. Analyse Results
 
 Before running the analysis, copy the ogbn-products results (from `run_products.sh`) into the `results_auto` folder so they are picked up together with the main auto results:
 
@@ -203,15 +282,16 @@ cp -r results_products/* results_auto/
 Then run the analysis script:
 
 ```bash
-python analyze_results_v12.py \
-    -a results_auto \
-    -t results_true \
-    -f results_false \
-    -n results_no_fixes \
-    -g results_gin_300epochs \
-    -o gnn_benchmark_results.xlsx
+python analyze_results_v50.py
 ```
 
-All flags are optional and default to the directory names shown above.
+**Flags:**
 
----
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-a` | `results_auto` | Directory containing the `dynamic=auto` results. |
+| `-t` | `results_true` | Directory containing the `dynamic=True` results. |
+| `-f` | `results_false` | Directory containing the `dynamic=False` results. |
+| `-n` | `results_no_fixes` | Directory containing the no-fixes results. |
+| `-g` | `results_gin_300epochs` | Directory containing the GIN 300-epoch results. |
+| `-o` | `gnn_benchmark_results.xlsx` | Output path for the results workbook. |
