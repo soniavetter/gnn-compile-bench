@@ -51,7 +51,7 @@ Each benchmark run writes five files into `<out-dir>/<framework>_<model>_<datase
 |------|-------------|
 | `run_experiments.sh` | Full experiment suite. |
 | `run_gin_accuracy.sh` | GIN-only re-run on ogbn-arxiv with 300 training epochs instead of 20, to obtain convergence-quality accuracy numbers for GIN. |
-| `run_no_fixes.sh` | GCN + GAT × PyG + DGL without the workaround to test the effect. |
+| `run_no_fixes.sh` | Full experiment suite (Phases 1–5, GCN + GAT only) re-run with `gnn_compile_benchmark_v29_no_fixes.py`. No workaround applied. Isolates the effect of those code changes. |
 | `run_products.sh` | GCN + GAT × PyG + DGL on ogbn-products. Requires mini-batch sampling; run separately due to long wall-time. |
 
 ---
@@ -184,7 +184,7 @@ mv results results_false
 
 | Flag | Description |
 |------|-------------|
-| `--script=<filename>` | Benchmark script to use. Use `gnn_compile_benchmark_dynamic.py` for standard results or `gnn_compile_benchmark_no_fixes.py` to reproduce the no-fixes results. |
+| `--script=<filename>` | Benchmark script to use. Use `gnn_compile_benchmark_v29_dynamic.py` for standard results or `gnn_compile_benchmark_v29_no_fixes.py` to reproduce the no-fixes results. |
 | `--dry-run` | Print the commands that would be executed without running them. |
 | `--dynamic=auto\|true\|false` | Set the `dynamic=` argument passed to `torch.compile()` for every run. Default is `auto` (`None` is passed automatically). `true` forces always-symbolic compilation; `false` forces always-static specialisation. |
 | `--resume=<key>` | Skip all runs before the given key and start from it. Useful after an interruption. Keys follow the format `<phase>:<framework>:<model>:<dataset>`, e.g. `3:dgl:gcn:ogbn-arxiv`. |
@@ -224,7 +224,7 @@ Accepts the same optional flags. Valid resume keys follow `6:<framework>:<model>
 ### 6. Run a Single Experiment Manually
 
 ```bash
-python gnn_compile_benchmark_dynamic.py \
+python gnn_compile_benchmark_v29_dynamic.py \
     --framework pyg \
     --model-name gcn \
     --dataset ogbn-arxiv \
