@@ -217,7 +217,7 @@ Accepts the same `--dry-run`, `--dynamic=`, `--resume=`, and `--script=` flags.
 bash run_products.sh
 ```
 
-Accepts the same optional flags. Valid resume keys follow `6:<framework>:<model>:ogbn-products` (models: `gcn`, `gat`; frameworks: `pyg`, `dgl`). Mini-batch sampling is enabled automatically via `--use-sampling`.
+Accepts the same optional flags. Valid resume keys follow `6:<framework>:<model>:ogbn-products` (models: `gcn`, `gat`; frameworks: `pyg`, `dgl`). Mini-batch sampling is enabled automatically via `--use-sampling`. Output is written to `results_products/`.
 
 ---
 
