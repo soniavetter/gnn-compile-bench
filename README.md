@@ -65,7 +65,7 @@ Each archive contains one subfolder per experiment run, with the five output fil
 | `results_auto.zip` | `auto` (default) | Primary results — `torch.compile` dynamic shapes set to `None` (PyTorch chooses automatically). Baseline for all comparisons. |
 | `results_true.zip` | `True` | Re-run with `dynamic=True` (always symbolic; compiled graph is always reused regardless of shape changes). |
 | `results_false.zip` | `False` | Re-run with `dynamic=False` (always static; re-specialises on every new shape). |
-| `results_no_fixes.zip` | `auto` | Re-run with `gnn_compile_benchmark_no_fixes.py` — no self-loop / normalisation workarounds applied. Isolates the impact of those fixes. |
+| `results_no_fixes.zip` | `auto` | Re-run with `gnn_compile_benchmark_v29_no_fixes.py` — no workaround applied. Isolates the impact of those fixes. |
 | `results_gin_300epochs.zip` | `auto` | GIN on ogbn-arxiv trained for 300 epochs (PyG GIN + DGL GIN). |
 
 ---
