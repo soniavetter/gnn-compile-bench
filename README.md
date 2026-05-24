@@ -31,8 +31,8 @@ A benchmark suite that measures the effect of `torch.compile()` on Graph Neural 
 
 | File | Description |
 |------|-------------|
-| `gnn_compile_benchmark_dynamic.py` | Main benchmark script. Supports parametric `dynamic=` shapes (`auto`/`True`/`False`). Use this for all standard runs. |
-| `gnn_compile_benchmark_no_fixes.py` | Identical to the above but **without** the self-loop and GCN-normalisation workaround — used to isolate the effect of those code changes. |
+| `gnn_compile_benchmark_v29_dynamic.py` | Main benchmark script. Supports parametric `dynamic=` shapes (`auto`/`True`/`False`). Use this for all standard runs. |
+| `gnn_compile_benchmark_v29_no_fixes.py` | Identical to the above but **without** the self-loop and GCN-normalisation workaround — used to isolate the effect of those code changes. |
 | `analyze_results_v16.py` | Post-processing script that reads all result folders into the multi-sheet XLSX workbook. |
 
 Each benchmark run writes five files into `<out-dir>/<framework>_<model>_<dataset>_<timestamp>/`:
