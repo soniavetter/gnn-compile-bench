@@ -303,6 +303,6 @@ python analyze_results_v16.py
 | `-a` | `results_auto` | Directory containing the `dynamic=auto` results. |
 | `-t` | `results_true` | Directory containing the `dynamic=True` results. |
 | `-f` | `results_false` | Directory containing the `dynamic=False` results. |
-| `-n` | `results_no_fixes` | Directory containing the no-fixes results. |
-| `-g` | `results_gin_300epochs` | Directory containing the GIN 300-epoch results. |
+| `-n` | `results_no_fixes` | Directory containing the no-fixes results. Optional — if missing, no-fixes sheets are skipped. |
+| `-g` | `results_gin_300epochs` | Directory containing the GIN 300-epoch results. Optional — if missing, GIN accuracy sheet is skipped.|
 | `-o` | `gnn_benchmark_results.xlsx` | Output path for the results workbook. |
