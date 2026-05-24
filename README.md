@@ -31,8 +31,8 @@ A benchmark suite that measures the effect of `torch.compile()` on Graph Neural 
 
 | File | Description |
 |------|-------------|
-| `gnn_compile_benchmark_v29_dynamic.py` | Main benchmark script. Supports parametric `dynamic=` shapes (`auto`/`True`/`False`). Use this for all standard runs. |
-| `gnn_compile_benchmark_v29_no_fixes.py` | Identical to the above but **without** the self-loop and GCN-normalisation workaround — used to isolate the effect of those code changes. |
+| `gnn_compile_benchmark_v29_dynamic.py` | Main benchmark script. Supports parametric `dynamic=` shapes. Use this for all standard runs. |
+| `gnn_compile_benchmark_v29_no_fixes.py` | Identical to the above but without the workaround applied. Used to isolate the effect of those code changes. |
 | `analyze_results_v16.py` | Post-processing script that reads all result folders into the multi-sheet XLSX workbook. |
 
 Each benchmark run writes five files into `<out-dir>/<framework>_<model>_<dataset>_<timestamp>/`:
@@ -166,6 +166,17 @@ pip install -r pip_packages.txt \
 
 ### 2. Run the Full Benchmark Suite
 
+**Experiment Run Scripts**
+
+Expected time is with the hardware used for these results — see `system_info.txt`.
+
+| File | Runs | Time | Description |
+|------|------|------|-------------|
+| `run_experiments.sh` (auto/true/false each)| 26 | total ~90 min | Full experiment suite. GCN + GAT × PyG + DGL on Cora and PubMed; GCN + GraphSAGE + GAT + GIN × PyG + DGL on ogbn-arxiv and ogbl-collab; PyG GCN on ogbn-mag and ogbl-biokg. |
+| `run_gin_accuracy.sh` | 2 | total ~10 min | GIN × PyG + DGL on ogbn-arxiv, 300 training epochs instead of 20. |
+| `run_no_fixes.sh` | 18 | total ~60 min | GCN + GAT × PyG + DGL on Cora, PubMed, ogbn-arxiv, ogbl-collab; PyG GCN on ogbn-mag and ogbl-biokg. Run with `gnn_compile_benchmark_v29_no_fixes.py`. |
+| `run_products.sh` | 4 | up to 8h 30 min per individual run | GCN + GAT × PyG + DGL on ogbn-products. |
+
 ```bash
 # results_auto (dynamic=None)
 bash run_experiments.sh
@@ -221,15 +232,6 @@ Accepts the same optional flags. Valid resume keys follow `6:<framework>:<model>
 
 ---
 
-> **Expected time (with the hardware used for these results — see `system_info.txt`):**
->
-> | Script | Runs | Time |
-> |--------|------|-----------|
-> | `run_experiments.sh` (auto/true/false, each) | 26 | total ~90min |
-> | `run_no_fixes.sh` | 18 | total ~60min |
-> | `run_gin_accuracy.sh` | 2 | total ~10min |
-> | `run_products.sh` | 4 | individual runs up to  ~8h 30min |
-
 ### 6. Run a Single Experiment Manually
 
 ```bash
@@ -282,7 +284,7 @@ python gnn_compile_benchmark_v29_dynamic.py \
 
 ### 7. Analyse Results
 
-Before running the analysis, copy the ogbn-products results (from `run_products.sh`) into the `results_auto` folder so they are picked up together with the main auto results:
+Before running the analysis, copy the ogbn-products results (from `run_products.sh`) into the `results_auto` folder so they are picked up together with the auto results:
 
 ```bash
 cp -r results_products/* results_auto/
