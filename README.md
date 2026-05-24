@@ -265,7 +265,7 @@ python gnn_compile_benchmark_v29_dynamic.py \
 | `--emb-dim` | `128` | Embedding dimension for DistMult (ogbl-biokg only). |
 | `--batch-size` | `8192` | Inference batch size for DistMult (ogbl-biokg only). |
 | `--train-batch-size` | `8192` | Training batch size for DistMult (ogbl-biokg only). |
-| `--use-sampling` | off | Enable mini-batch neighbour sampling. Required for ogbn-products and ogbl-citation2 to avoid OOM; GAT enables it automatically for ogbn-arxiv and ogbl-collab. |
+| `--use-sampling` | off | Enable mini-batch neighbour sampling. Required for ogbn-products to avoid OOM; GAT enables it automatically for ogbn-arxiv and ogbl-collab. |
 | `--dynamic` | `auto` | `dynamic=` argument for `torch.compile()`. `auto` = PyTorch decides, `true` = always symbolic, `false` = always static. |
 | `--gat-chunk-size` | `None` | Chunk `edge_index` into batches of this size during full-graph GAT attention to reduce peak memory. No chunking by default. |
 | `--repeats` | `30` | Number of timed inference repetitions per mode (after warmup). |
