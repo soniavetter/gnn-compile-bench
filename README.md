@@ -221,6 +221,15 @@ Accepts the same optional flags. Valid resume keys follow `6:<framework>:<model>
 
 ---
 
+> **Expected time (with the hardware used for these results — see `system_info.txt`):**
+>
+> | Script | Runs | Time |
+> |--------|------|-----------|
+> | `run_experiments.sh` (auto/true/false, each) | 26 | total ~90min |
+> | `run_no_fixes.sh` | 18 | total ~60min |
+> | `run_gin_accuracy.sh` | 2 | total ~10min |
+> | `run_products.sh` | 4 | individual runs up to  ~8h 30min |
+
 ### 6. Run a Single Experiment Manually
 
 ```bash
