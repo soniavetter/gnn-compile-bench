@@ -1,0 +1,75 @@
+name: gnn_bench
+channels:
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - --index-url https://download.pytorch.org/whl/cu124
+      - torch==2.6.0+cu124
+      - --extra-index-url https://pypi.org/simple
+      - --find-links https://data.pyg.org/whl/torch-2.6.0+cu124.html
+      - --find-links https://data.dgl.ai/wheels/torch-2.6/cu124/repo.html
+      - torch-geometric==2.7.0
+      - torch-scatter
+      - torch-sparse
+      - torch-cluster
+      - torch-spline-conv
+      - pyg-lib
+      - dgl
+      - aiohappyeyeballs
+      - aiohttp
+      - aiosignal
+      - annotated-types
+      - attrs
+      - beautifulsoup4
+      - certifi
+      - charset-normalizer
+      - contourpy
+      - cycler
+      - einops
+      - et-xmlfile
+      - filelock
+      - fonttools
+      - frozenlist
+      - fsspec
+      - gdown
+      - googledrivedownloader
+      - idna
+      - jinja2
+      - joblib
+      - kiwisolver
+      - littleutils
+      - markupsafe
+      - matplotlib
+      - mpmath
+      - multidict
+      - networkx
+      - numpy
+      - ogb
+      - openpyxl
+      - outdated
+      - pandas
+      - pillow
+      - propcache
+      - psutil
+      - pydantic
+      - pydantic-core
+      - pyparsing
+      - pysocks
+      - python-dateutil
+      - pyyaml
+      - requests
+      - scikit-learn
+      - scipy
+      - six
+      - soupsieve
+      - sympy
+      - threadpoolctl
+      - tqdm
+      - triton
+      - typing-extensions
+      - typing-inspection
+      - urllib3
+      - xxhash
+      - yarl
