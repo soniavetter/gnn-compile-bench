@@ -2,7 +2,7 @@
 
 **Author:** Sonia Vetter · March–May 2026
 
-A benchmark suite that measures the effect of `torch.compile()` on Graph Neural Networks across PyTorch Geometric (PyG) and Deep Graph Library (DGL). Experiments use datasets from Open Graph Benchmark (OGB) and from Planetoid.
+This is a benchmarking suite that measures the effect of torch.compile() on graph neural networks (GNNs) across PyTorch Geometric (PyG) and the Deep Graph Library (DGL). The experiments use datasets from the Open Graph Benchmark (OGB) and Planetoid.
 
 ---
 
