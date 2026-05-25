@@ -121,7 +121,7 @@ Each archive contains one subfolder per experiment run, with the five output fil
 
 ### 1. Set Up the Environment
 
-Install [Miniconda](https://docs.anaconda.com/miniconda/install/).
+Install [Miniconda](https://docs.anaconda.com/miniconda/install/) on Linux.
 
 ---
 
