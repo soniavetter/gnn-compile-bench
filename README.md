@@ -35,6 +35,8 @@ This is a benchmarking suite that measures the effect of torch.compile() on grap
 | `gnn_compile_benchmark_v29_no_fixes.py` | Identical to the above but without the workaround applied. Used to isolate the effect of those code changes. |
 | `analyze_results_v16.py` | Post-processing script that reads all result folders into the multi-sheet XLSX workbook. |
 
+This benchmark is implemented as a single Python file by design. Scientific reproducibility demands that results can always be traced back to one exact, self-contained artifact. The two script variants (_dynamic, _no_fixes) are deliberate forks rather than flags or shared modules, so each experimental condition stays fully isolated. All internal components (dataset loading, model definitions, timing harnesses, Dynamo metrics) are tightly coupled to the specific measurement protocol, making modularization overhead without benefit.
+
 Each benchmark run writes five files into `<out-dir>/<framework>_<model>_<dataset>_<timestamp>/`:
 
 - `config.json` — full run configuration and system info
